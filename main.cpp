@@ -40,11 +40,11 @@ void process_events(struct libevdev *dev) {
     std::deque<int> y_values;
     int average_y = 0;
     bool tripleTouching = false;
+    int previous_average = 0;
 
     while (status = libevdev_next_event(dev, flags, &ev), !is_error(status)) {
         if (!has_next_event(status)) continue;
 
-        // if triple touch code ON, start timer. If triple touch code OFF, stop timer.
         // get the average of the last 3 y values.
         // come up with an equation in which the faster the average increases, the more volume increases.
 
@@ -67,6 +67,8 @@ void process_events(struct libevdev *dev) {
 
             average_y = get_y_average(y_values);
             std::cout << "average y: " << average_y << std::endl;
+
+            previous_average = average_y;
 
 //            std::cout << "y pos: ";
 //            std::cout << ev.value << std::endl;
