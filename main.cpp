@@ -4,6 +4,8 @@
 #include <string>
 #include <unistd.h>
 #include <fcntl.h>
+#include <queue>
+#include <numeric>
 
 struct libevdev* find_device_by_name(const std::string& requested_name) {
     struct libevdev *dev = nullptr;
@@ -23,6 +25,10 @@ struct libevdev* find_device_by_name(const std::string& requested_name) {
     return nullptr;
 }
 
+int get_y_average(const std::deque<int>& y_values) {
+    return std::accumulate(y_values.begin(), y_values.end(), 0) / 3;
+}
+
 void process_events(struct libevdev *dev) {
 
     struct input_event ev = {};
@@ -31,6 +37,10 @@ void process_events(struct libevdev *dev) {
     auto has_next_event = [](int v) { return v >= 0; };
     const auto flags = LIBEVDEV_READ_FLAG_NORMAL | LIBEVDEV_READ_FLAG_BLOCKING;
 
+    std::deque<int> y_values;
+    int average_y = 0;
+    bool tripleTouching = false;
+
     while (status = libevdev_next_event(dev, flags, &ev), !is_error(status)) {
         if (!has_next_event(status)) continue;
 
@@ -38,20 +48,28 @@ void process_events(struct libevdev *dev) {
         // get the average of the last 3 y values.
         // come up with an equation in which the faster the average increases, the more volume increases.
 
-
         if (ev.type == 1 && ev.code == 334) {
             std::cout << "Got triple touch" << std::endl;
 //            std::cout << " type=" << ev.type;
 //            std::cout << " code=" << ev.code;
             std::cout << " value=" << (ev.value == 1 ? " on" : " off") << std::endl;
+            tripleTouching = ev.value;
         }
 //        if (ev.type == 3 && ev.code == 53) {
 //            std::cout << "x pos: ";
 //            std::cout << ev.value << std::endl;
 //        }
-        if (ev.type == 3 && ev.code == 54) {
-            std::cout << "y pos: ";
-            std::cout << ev.value << std::endl;
+        if (ev.type == 3 && ev.code == 54 && tripleTouching) {
+            y_values.push_back(ev.value);
+
+            if (y_values.size() > 3) y_values.pop_front();
+            else continue;
+
+            average_y = get_y_average(y_values);
+            std::cout << "average y: " << average_y << std::endl;
+
+//            std::cout << "y pos: ";
+//            std::cout << ev.value << std::endl;
         }
         BTN_LEFT;
 
