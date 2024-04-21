@@ -6,11 +6,12 @@
 #include <fcntl.h>
 #include <queue>
 #include <numeric>
+#include <algorithm>
 
 struct libevdev* find_device_by_name(const std::string& requested_name) {
     struct libevdev *dev = nullptr;
 
-    std::string path = "/dev/input/event10";
+    std::string path = "/dev/input/event9";
     int fd = open(path.c_str(), O_RDWR|O_CLOEXEC);
     if (fd == -1) return nullptr;
 
@@ -26,10 +27,14 @@ struct libevdev* find_device_by_name(const std::string& requested_name) {
 }
 
 int get_y_average(const std::deque<int>& y_values) {
+    for (auto y : y_values) {
+        std::cout << y << " ";
+    }
     return std::accumulate(y_values.begin(), y_values.end(), 0) / 3;
 }
 
-void process_events(struct libevdev *dev) {
+//todo account for 4 finger touch
+void process_events_touchpad(struct libevdev *dev) {
 
     struct input_event ev = {};
     int status = 0;
@@ -41,11 +46,12 @@ void process_events(struct libevdev *dev) {
     int average_y = 0;
     bool tripleTouching = false;
     int previous_average = 0;
+    int volume = 50;
+    // y_min 0, y_max 571
 
     while (status = libevdev_next_event(dev, flags, &ev), !is_error(status)) {
         if (!has_next_event(status)) continue;
 
-        // get the average of the last 3 y values.
         // come up with an equation in which the faster the average increases, the more volume increases.
 
         if (ev.type == 1 && ev.code == 334) {
@@ -59,6 +65,12 @@ void process_events(struct libevdev *dev) {
 //            std::cout << "x pos: ";
 //            std::cout << ev.value << std::endl;
 //        }
+
+        if (!tripleTouching) {
+            volume = 50;
+            previous_average = 0;
+        }
+
         if (ev.type == 3 && ev.code == 54 && tripleTouching) {
             y_values.push_back(ev.value);
 
@@ -66,7 +78,22 @@ void process_events(struct libevdev *dev) {
             else continue;
 
             average_y = get_y_average(y_values);
-            std::cout << "average y: " << average_y << std::endl;
+            std::cout << " --> average: " << average_y;
+
+            if (!previous_average) {
+                previous_average = average_y;
+                continue;
+            }
+
+            auto diff = average_y - previous_average;
+            if (std::abs(diff) >= 10) {
+                std::cout << std::endl;
+                continue;
+            }
+            std::cout << " --> diff: " << diff;
+            volume -= diff / 2;
+            volume = std::clamp(volume, 0, 100);
+            std::cout << " --> volume: " << volume << std::endl;
 
             previous_average = average_y;
 
@@ -105,7 +132,7 @@ void getDevices() {
             dev = nullptr;
         }
         close(fd);
-        if (i > 50) break;
+        if (i > 20) break;
     }
 }
 
@@ -120,25 +147,12 @@ int main() {
 
     libevdev_grab(dev, LIBEVDEV_GRAB);
 
-    process_events(dev);
+    process_events_touchpad(dev);
 
     libevdev_free(dev);
     return 0;
 }
 
-/*
-I: Bus=0018 Vendor=06cb Product=cd5f Version=0100
-N: Name="SYNA2B46:00 06CB:CD5F Touchpad"
-P: Phys=i2c-SYNA2B46:00
-S: Sysfs=/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-1/i2c-SYNA2B46:00/0018:06CB:CD5F.0007/input/input14
-U: Uniq=
-H: Handlers=mouse2 event10
-B: PROP=1
-B: EV=1b
-B: KEY=e520 30000 0 0 0 0
-B: ABS=2e0800000000003
-B: MSC=20
- */
 
 /* single top left
 Got input_event type=3 code=47 value=0          multi-touch slot being modified
