@@ -6,11 +6,17 @@ set(CMAKE_CXX_STANDARD 17)
 # Find libevdev package
 find_package(PkgConfig REQUIRED)
 pkg_search_module(LIBEVDEV REQUIRED libevdev)
+find_package(ALSA REQUIRED)
 
 add_executable(TouchpadVolumeControl main.cpp)
 
-target_link_libraries(TouchpadVolumeControl ${LIBEVDEV_LIBRARIES})
-target_include_directories(TouchpadVolumeControl PUBLIC ${LIBEVDEV_INCLUDE_DIRS})
+if (ALSA_FOUND)
+    include_directories(${ALSA_INCLUDE_DIRS})
+    target_link_libraries(${PROJECT_NAME} ${ALSA_LIBRARIES})
+endif()
+
+target_link_libraries(${PROJECT_NAME} ${LIBEVDEV_LIBRARIES})
+target_include_directories(${PROJECT_NAME} PUBLIC ${LIBEVDEV_INCLUDE_DIRS})
 
 
 ## Specify the path to libevdev headers

@@ -8,3 +8,6 @@ to run via terminal
 
 to get devices
 # cat /proc/bus/input/devices
+
+for audio
+# sudo dnf install alsa-lib-devel
