@@ -9,21 +9,19 @@
 #include <algorithm>
 #include <alsa/asoundlib.h>
 
-void set_volume(long volume, const char* selem_name = "Master") {
-    snd_mixer_t *mixer;
-    snd_mixer_selem_id_t *sid;
-    const char *card = "default";
-    long min, max;
+snd_mixer_t *mixer;
+snd_mixer_selem_id_t *sid;
+snd_mixer_elem_t* elem;
+void initializeMixer() {
     int err;
 
-    // Open mixer
     if ((err = snd_mixer_open(&mixer, 0)) < 0) {
         std::cerr << "Mixer open error: " << snd_strerror(err) << std::endl;
         return;
     }
 
-    if ((err = snd_mixer_attach(mixer, card)) < 0) {
-        std::cerr << "Mixer attach " << card << " error: " << snd_strerror(err) << std::endl;
+    if ((err = snd_mixer_attach(mixer, "default")) < 0) {
+        std::cerr << "Mixer attach error: " << snd_strerror(err) << std::endl;
         snd_mixer_close(mixer);
         return;
     }
@@ -42,8 +40,14 @@ void set_volume(long volume, const char* selem_name = "Master") {
 
     snd_mixer_selem_id_malloc(&sid);
     snd_mixer_selem_id_set_index(sid, 0);
-    snd_mixer_selem_id_set_name(sid, selem_name);
-    snd_mixer_elem_t* elem = snd_mixer_find_selem(mixer, sid);
+    snd_mixer_selem_id_set_name(sid, "Master");
+    elem = snd_mixer_find_selem(mixer, sid);
+}
+
+void set_volume(long newVolume) {
+    long volume, min, max;
+
+    snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_MONO, &volume);
 
     if (!elem) {
         std::cerr << "Cannot find simple element." << std::endl;
@@ -53,7 +57,7 @@ void set_volume(long volume, const char* selem_name = "Master") {
     }
 
     snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-    snd_mixer_selem_set_playback_volume_all(elem, volume * max / 100);
+    snd_mixer_selem_set_playback_volume_all(elem, volume + newVolume * max / 100);
 
     snd_mixer_close(mixer);
     snd_mixer_selem_id_free(sid);
@@ -173,9 +177,11 @@ void process_events_touchpad(struct libevdev *dev) {
 }
 
 int main() {
-//    set_volume(10);
+//    initializeMixer();
+//    set_volume(10); // 10% increase
+//    return 0;
 
-    auto *dev = getDevice();
+    auto dev = getDevice();
 
     if (dev == nullptr) {
         std::cerr << "Couldn't find device!" << std::endl;
