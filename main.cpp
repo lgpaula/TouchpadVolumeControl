@@ -8,60 +8,7 @@
 #include <numeric>
 #include <algorithm>
 #include <alsa/asoundlib.h>
-
-snd_mixer_t *mixer;
-snd_mixer_selem_id_t *sid;
-snd_mixer_elem_t* elem;
-void initializeMixer() {
-    int err;
-
-    if ((err = snd_mixer_open(&mixer, 0)) < 0) {
-        std::cerr << "Mixer open error: " << snd_strerror(err) << std::endl;
-        return;
-    }
-
-    if ((err = snd_mixer_attach(mixer, "default")) < 0) {
-        std::cerr << "Mixer attach error: " << snd_strerror(err) << std::endl;
-        snd_mixer_close(mixer);
-        return;
-    }
-
-    if ((err = snd_mixer_selem_register(mixer, nullptr, nullptr)) < 0) {
-        std::cerr << "Mixer register error: " << snd_strerror(err) << std::endl;
-        snd_mixer_close(mixer);
-        return;
-    }
-
-    if ((err = snd_mixer_load(mixer)) < 0) {
-        std::cerr << "Mixer load error: " << snd_strerror(err) << std::endl;
-        snd_mixer_close(mixer);
-        return;
-    }
-
-    snd_mixer_selem_id_malloc(&sid);
-    snd_mixer_selem_id_set_index(sid, 0);
-    snd_mixer_selem_id_set_name(sid, "Master");
-    elem = snd_mixer_find_selem(mixer, sid);
-}
-
-void set_volume(long newVolume) {
-    long volume, min, max;
-
-    snd_mixer_selem_get_playback_volume(elem, SND_MIXER_SCHN_MONO, &volume);
-
-    if (!elem) {
-        std::cerr << "Cannot find simple element." << std::endl;
-        snd_mixer_close(mixer);
-        snd_mixer_selem_id_free(sid);
-        return;
-    }
-
-    snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
-    snd_mixer_selem_set_playback_volume_all(elem, volume + newVolume * max / 100);
-
-    snd_mixer_close(mixer);
-    snd_mixer_selem_id_free(sid);
-}
+#include "Audio/AudioHandler.hpp"
 
 struct libevdev* find_device_by_name(const std::string& requested_name, int event) {
     struct libevdev *dev = nullptr;
@@ -177,9 +124,12 @@ void process_events_touchpad(struct libevdev *dev) {
 }
 
 int main() {
-//    initializeMixer();
-//    set_volume(10); // 10% increase
-//    return 0;
+
+    AudioHandler audioHandler;
+    audioHandler.setVolume(10);
+
+
+    return 0;
 
     auto dev = getDevice();
 

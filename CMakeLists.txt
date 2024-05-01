@@ -8,7 +8,8 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(LIBEVDEV REQUIRED libevdev)
 find_package(ALSA REQUIRED)
 
-add_executable(TouchpadVolumeControl main.cpp)
+file(GLOB SOURCES "Audio/*.cpp")
+add_executable(TouchpadVolumeControl main.cpp ${SOURCES})
 
 if (ALSA_FOUND)
     include_directories(${ALSA_INCLUDE_DIRS})
@@ -17,10 +18,3 @@ endif()
 
 target_link_libraries(${PROJECT_NAME} ${LIBEVDEV_LIBRARIES})
 target_include_directories(${PROJECT_NAME} PUBLIC ${LIBEVDEV_INCLUDE_DIRS})
-
-
-## Specify the path to libevdev headers
-#include_directories(/usr/include/libevdev-1.0)
-#
-## Link against libevdev library
-#target_link_libraries(touchpad PRIVATE evdev)
