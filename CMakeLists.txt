@@ -8,7 +8,9 @@ find_package(PkgConfig REQUIRED)
 pkg_search_module(LIBEVDEV REQUIRED libevdev)
 find_package(ALSA REQUIRED)
 
-file(GLOB SOURCES "Audio/*.cpp")
+file(GLOB SOURCES "Audio/*.cpp"
+                    "Device/*.cpp")
+
 add_executable(TouchpadVolumeControl main.cpp ${SOURCES})
 
 if (ALSA_FOUND)
