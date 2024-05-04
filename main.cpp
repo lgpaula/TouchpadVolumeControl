@@ -3,10 +3,15 @@
 
 int main() {
 
-//    AudioHandler audioHandler;
-//    audioHandler.setVolume(10);
+    AudioHandler audioHandler;
 
     TouchpadListener touchpadListener;
+    touchpadListener.processEvents();
+
+    touchpadListener.setVolumeChangeCallback([&audioHandler](int volume) {
+//        audioHandler.setVolume(10);
+        audioHandler.setVolume(volume);
+    });
 
     return 0;
 //    BTN_LEFT;

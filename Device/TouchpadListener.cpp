@@ -13,7 +13,7 @@ TouchpadListener::TouchpadListener() : device(getDevice()) {
         return;
     }
 
-    processEvents(device);
+//    processEvents(device);
 }
 
 libevdev* TouchpadListener::find_device_by_name(const std::string& requested_name, int event) {
@@ -27,8 +27,8 @@ libevdev* TouchpadListener::find_device_by_name(const std::string& requested_nam
         std::string name = libevdev_get_name(dev);
         if (name == requested_name) return dev;
         libevdev_free(dev);
-        dev = nullptr;    return 0;
-
+        dev = nullptr;
+        return dev;
     }
 
     close(fd);
@@ -62,8 +62,7 @@ libevdev* TouchpadListener::getDevice() {
 }
 
 // todo keep track of each individual touch and average each last value
-// todo add a callback whenever we have new volume
-void TouchpadListener::processEvents(libevdev *dev) {
+void TouchpadListener::processEvents() {
 
     input_event ev = {};
     int status = 0;
@@ -77,7 +76,7 @@ void TouchpadListener::processEvents(libevdev *dev) {
     int previous_average = 0;
     int volume = 50;
 
-    while (status = libevdev_next_event(dev, flags, &ev), !is_error(status)) {
+    while (status = libevdev_next_event(device, flags, &ev), !is_error(status)) {
         if (!has_next_event(status)) continue;
 
         if (ev.type == 1 && ev.code == 334) {
@@ -120,6 +119,7 @@ void TouchpadListener::processEvents(libevdev *dev) {
             volume -= diff;
             volume = std::clamp(volume, 0, 100);
             std::cout << " --> volume: " << volume << std::endl;
+            onVolumeChange(volume);
 
             previous_average = average_y;
         }

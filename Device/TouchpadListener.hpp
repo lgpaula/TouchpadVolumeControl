@@ -4,17 +4,24 @@
 #include "libevdev-1.0/libevdev/libevdev-uinput.h"
 #include "libevdev-1.0/libevdev/libevdev.h"
 #include <string>
+#include <functional>
+
+std::function<void(int)> onVolumeChange;
 
 class TouchpadListener {
 
 public:
     TouchpadListener();
     ~TouchpadListener();
+    void processEvents();
+
+    void setVolumeChangeCallback(const std::function<void(int)>& callback) {
+        onVolumeChange = callback;
+    }
 
 private:
     libevdev* getDevice();
     libevdev* find_device_by_name(const std::string& requested_name, int event);
-    void processEvents(libevdev *dev);
 
 private:
     std::string devicePath = "/dev/input/event";
