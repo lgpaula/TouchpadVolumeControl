@@ -6,7 +6,6 @@
 #include <string>
 #include <functional>
 
-std::function<void(int)> onVolumeChange;
 
 class TouchpadListener {
 
@@ -15,16 +14,16 @@ public:
     ~TouchpadListener();
     void processEvents();
 
-    void setVolumeChangeCallback(const std::function<void(int)>& callback) {
-        onVolumeChange = callback;
-    }
+//    std::function<void(int)> onVolumeChange;
+//    void setVolumeChangeCallback(const std::function<void(int)>& callback) {
+//        onVolumeChange = callback;
+//    }
 
 private:
     libevdev* getDevice();
-    libevdev* find_device_by_name(const std::string& requested_name, int event);
 
 private:
-    std::string devicePath = "/dev/input/event";
+    std::string devicesPath = "/dev/input/event";
     libevdev* device;
 };
 

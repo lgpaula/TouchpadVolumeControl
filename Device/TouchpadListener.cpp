@@ -13,33 +13,14 @@ TouchpadListener::TouchpadListener() : device(getDevice()) {
         return;
     }
 
-//    processEvents(device);
-}
-
-libevdev* TouchpadListener::find_device_by_name(const std::string& requested_name, int event) {
-    libevdev *dev = nullptr;
-
-    std::string path = devicePath + std::to_string(event);
-    int fd = open(path.c_str(), O_RDWR|O_CLOEXEC);
-    if (fd == -1) return nullptr;
-
-    if (libevdev_new_from_fd(fd, &dev) == 0) {
-        std::string name = libevdev_get_name(dev);
-        if (name == requested_name) return dev;
-        libevdev_free(dev);
-        dev = nullptr;
-        return dev;
-    }
-
-    close(fd);
-    return nullptr;
+    processEvents();
 }
 
 libevdev* TouchpadListener::getDevice() {
     libevdev *dev = nullptr;
 
     for (int i = 0;; i++) {
-        std::string path = devicePath + std::to_string(i);
+        std::string path = devicesPath + std::to_string(i);
         int fd = open(path.c_str(), O_RDWR|O_CLOEXEC);
 
         if (fd == -1) break;
@@ -49,10 +30,10 @@ libevdev* TouchpadListener::getDevice() {
             std::string phys = libevdev_get_phys(dev);
             std::string name = libevdev_get_name(dev);
 
+            if (name.find("Touchpad") != std::string::npos) return dev;
+
             libevdev_free(dev);
             dev = nullptr;
-
-            if (name.find("Touchpad") != std::string::npos) return find_device_by_name(name, i);
         }
         close(fd);
         if (i > 20) break;
@@ -119,7 +100,7 @@ void TouchpadListener::processEvents() {
             volume -= diff;
             volume = std::clamp(volume, 0, 100);
             std::cout << " --> volume: " << volume << std::endl;
-            onVolumeChange(volume);
+//            onVolumeChange(volume);
 
             previous_average = average_y;
         }
