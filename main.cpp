@@ -1,16 +1,14 @@
 #include "Audio/AudioHandler.hpp"
 #include "Device/TouchpadListener.hpp"
+#include <iostream>
 
 int main() {
 
     AudioHandler audioHandler;
-
-    TouchpadListener touchpadListener;
-
-//    touchpadListener.setVolumeChangeCallback([&audioHandler](int volume) {
-//        audioHandler.setVolume(10);
+    TouchpadListener touchpadListener([&audioHandler](int volume) {
+        std::cout << "Volume changed to " << volume << std::endl;
 //        audioHandler.setVolume(volume);
-//    });
+    });
 
     return 0;
 //    BTN_LEFT;

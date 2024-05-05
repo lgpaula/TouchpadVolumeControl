@@ -5,9 +5,11 @@
 #include <queue>
 #include <numeric>
 #include <algorithm>
+#include <utility>
 
 
-TouchpadListener::TouchpadListener() : device(getDevice()) {
+TouchpadListener::TouchpadListener(TouchpadListener::OnVolumeChange onVolumeChange) :
+    onVolumeChange(std::move(onVolumeChange)), device(getDevice()) {
     if (device == nullptr) {
         std::cerr << "Couldn't find device!" << std::endl;
         return;
@@ -100,7 +102,11 @@ void TouchpadListener::processEvents() {
             volume -= diff;
             volume = std::clamp(volume, 0, 100);
             std::cout << " --> volume: " << volume << std::endl;
-//            onVolumeChange(volume);
+            try {
+                onVolumeChange(volume);
+            } catch (const std::bad_function_call& e) {
+                std::cerr << "Error: " << e.what() << std::endl;
+            }
 
             previous_average = average_y;
         }
