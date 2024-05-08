@@ -2,7 +2,6 @@
 #include <iostream>
 #include <algorithm>
 
-
 AudioHandler::AudioHandler() {
     initializeMixer();
 }
@@ -56,8 +55,6 @@ void AudioHandler::increaseVolume(long newVolume) {
     snd_mixer_selem_set_playback_volume_all(elem, volume + newVolume * max / 100);
     volume += newVolume * max / 100;
     volume = std::clamp(volume, min, max);
-
-    std::cout << "Volume: " << volume << " = " << (volume * 100 / max) << "%" << std::endl;
 }
 
 void AudioHandler::cleanUp(int error) {
