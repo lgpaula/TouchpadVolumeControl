@@ -5,9 +5,11 @@
 int main() {
 
     AudioHandler audioHandler;
+
     TouchpadListener touchpadListener([&audioHandler](int volume) {
-        std::cout << "Volume changed to " << volume << std::endl;
-//        audioHandler.setVolume(volume);
+        if (volume) {
+            audioHandler.increaseVolume(volume);
+        }
     });
 
     return 0;

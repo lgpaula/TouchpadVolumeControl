@@ -1,5 +1,6 @@
 #include "AudioHandler.hpp"
 #include <iostream>
+#include <algorithm>
 
 
 AudioHandler::AudioHandler() {
@@ -48,9 +49,15 @@ void AudioHandler::initializeParams() {
     snd_mixer_selem_get_playback_volume_range(elem, &min, &max);
 }
 
-void AudioHandler::setVolume(long newVolume) {
+void AudioHandler::increaseVolume(long newVolume) {
+    if (volume == max && newVolume > 0) return;
+    if (volume == min && newVolume < 0) return;
+
     snd_mixer_selem_set_playback_volume_all(elem, volume + newVolume * max / 100);
-    cleanUp();
+    volume += newVolume * max / 100;
+    volume = std::clamp(volume, min, max);
+
+    std::cout << "Volume: " << volume << " = " << (volume * 100 / max) << "%" << std::endl;
 }
 
 void AudioHandler::cleanUp(int error) {

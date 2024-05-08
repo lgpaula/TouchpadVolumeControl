@@ -11,3 +11,6 @@ to get devices
 
 for audio
 # sudo dnf install alsa-lib-devel
+
+gotta run with sudo -E to get the permissions to change the volume
+# sudo -E ./project_name

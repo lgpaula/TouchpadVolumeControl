@@ -8,7 +8,7 @@ class AudioHandler {
 
 public:
     AudioHandler();
-    void setVolume(long newVolume);
+    void increaseVolume(long newVolume);
 
 private:
     void initializeMixer();
