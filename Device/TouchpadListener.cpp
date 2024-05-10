@@ -20,7 +20,7 @@ TouchpadListener::TouchpadListener(TouchpadListener::OnVolumeChange onVolumeChan
 libevdev* TouchpadListener::getDevice() {
     libevdev *dev = nullptr;
 
-    for (int i = 0;; i++) {
+    for (size_t i = 0; i < 20; ++i) {
         std::string path = devicesPath + std::to_string(i);
         int fd = open(path.c_str(), O_RDWR|O_CLOEXEC);
 
@@ -37,7 +37,6 @@ libevdev* TouchpadListener::getDevice() {
             dev = nullptr;
         }
         close(fd);
-        if (i > 20) break;
     }
 
     return nullptr;
@@ -57,26 +56,25 @@ void TouchpadListener::processEvents() {
         if (!has_next_event(status)) continue;
 
         switch (ev.code) {
-            case 47: // slot id
+            case ABS_MT_SLOT:
                 currFinger = ev.value;
                 break;
 
-            case 334: // triple touch
+            case BTN_TOOL_TRIPLETAP:
                 tripleTouching = ev.value;
                 break;
 
-            case 57: // touch id
+            case ABS_MT_TRACKING_ID: {
                 if (currFinger == -1) break;
-                if (ev.value != -1) {
-                    Finger finger;
-                    finger.id = currFinger;
-                    fingers[currFinger] = finger;
-                } else {
-                    fingers[currFinger].reset();
-                }
-                break;
 
-            case 54: { // y pos
+                Finger finger;
+                if (ev.value != -1) finger.id = currFinger;
+
+                fingers[currFinger] = finger;
+                break;
+            }
+
+            case ABS_MT_POSITION_Y: {
                 if (currFinger == -1 || !tripleTouching) break;
 
                 int volume = fingers[currFinger].updateY(ev.value);
@@ -90,7 +88,7 @@ void TouchpadListener::processEvents() {
     }
 }
 
-TouchpadListener::~TouchpadListener() {
+TouchpadListener::~TouchpadListener() noexcept {
     libevdev_free(device);
 }
 
