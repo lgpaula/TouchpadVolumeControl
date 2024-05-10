@@ -10,7 +10,7 @@
 TouchpadListener::TouchpadListener(TouchpadListener::OnVolumeChange onVolumeChange) :
     onVolumeChange(std::move(onVolumeChange)), device(getDevice()) {
     if (device == nullptr) {
-        std::cerr << "Couldn't find device!" << std::endl;
+        throw std::runtime_error("Couldn't find device!");
         return;
     }
 
@@ -77,7 +77,8 @@ void TouchpadListener::processEvents() {
             case ABS_MT_POSITION_Y: {
                 if (currFinger == -1 || !tripleTouching) break;
 
-                int volume = fingers[currFinger].updateY(ev.value);
+                fingers[currFinger].updateY(ev.value);
+                int volume = updateVolume(fingers[currFinger], ev.value);
                 onVolumeChange(-volume);
                 break;
             }
@@ -92,18 +93,18 @@ TouchpadListener::~TouchpadListener() noexcept {
     libevdev_free(device);
 }
 
-int Finger::updateY(int y) {
-    if (id) return 0;
-    if (currentY == std::numeric_limits<int>::max()) {
-        currentY = y;
-        return 0;
-    }
+int TouchpadListener::updateVolume(Finger finger, int y) {
+    const auto diff = y - finger.currentY;
 
-    auto diff = y - currentY;
     if (std::abs(diff) >= 5) {
-        currentY = y;
+        finger.currentY = y;
         return diff / 5;
     }
 
     return 0;
+}
+
+void Finger::updateY(int y) {
+    if (id) return;
+    if (currentY == std::numeric_limits<int>::max()) currentY = y;
 }

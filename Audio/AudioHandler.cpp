@@ -60,6 +60,7 @@ void AudioHandler::increaseVolume(long newVolume) {
 void AudioHandler::cleanUp(int error) {
     if (mixer) snd_mixer_close(mixer);
     if (sid) snd_mixer_selem_id_free(sid);
+    if (elem) snd_mixer_elem_free(elem);
 
     if (error) std::cerr << "Error occurred: " << snd_strerror(error) << std::endl;
 }
