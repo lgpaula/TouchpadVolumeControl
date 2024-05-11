@@ -29,7 +29,7 @@ private:
 
 private:
     std::string devicesPath = "/dev/input/event";
-    libevdev* device;
+    libevdev *device;
     std::array<Finger, 3> fingers;
     int currFinger = -1;
 };

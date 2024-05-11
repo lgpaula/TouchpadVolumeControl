@@ -64,3 +64,7 @@ void AudioHandler::cleanUp(int error) {
 
     if (error) std::cerr << "Error occurred: " << snd_strerror(error) << std::endl;
 }
+
+AudioHandler::~AudioHandler() noexcept {
+    cleanUp();
+}

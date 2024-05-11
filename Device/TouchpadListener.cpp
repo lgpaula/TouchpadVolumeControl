@@ -8,7 +8,7 @@
 #include <utility>
 
 TouchpadListener::TouchpadListener(TouchpadListener::OnVolumeChange onVolumeChange) :
-    onVolumeChange(std::move(onVolumeChange)), device(getDevice()) {
+        onVolumeChange(std::move(onVolumeChange)), device(getDevice()) {
     if (device == nullptr) {
         throw std::runtime_error("Couldn't find device!");
         return;
@@ -17,12 +17,12 @@ TouchpadListener::TouchpadListener(TouchpadListener::OnVolumeChange onVolumeChan
     processEvents();
 }
 
-libevdev* TouchpadListener::getDevice() {
+libevdev *TouchpadListener::getDevice() {
     libevdev *dev = nullptr;
 
     for (size_t i = 0; i < 20; ++i) {
         std::string path = devicesPath + std::to_string(i);
-        int fd = open(path.c_str(), O_RDWR|O_CLOEXEC);
+        int fd = open(path.c_str(), O_RDWR | O_CLOEXEC);
 
         if (fd == -1) break;
 

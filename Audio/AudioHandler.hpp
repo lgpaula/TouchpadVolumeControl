@@ -1,7 +1,6 @@
 #ifndef TOUCHPADVOLUMECONTROL_AUDIOHANDLER_HPP
 #define TOUCHPADVOLUMECONTROL_AUDIOHANDLER_HPP
 
-
 #include <alsa/asoundlib.h>
 
 class AudioHandler {
@@ -15,14 +14,15 @@ private:
     void initializeParams();
     void cleanUp(int error = 0);
 
+    ~AudioHandler() noexcept;
+
 private:
     snd_mixer_t *mixer = nullptr;
     snd_mixer_selem_id_t *sid = nullptr;
-    snd_mixer_elem_t* elem = nullptr;
+    snd_mixer_elem_t *elem = nullptr;
     long volume;
     long min;
     long max;
-
 };
 
 
