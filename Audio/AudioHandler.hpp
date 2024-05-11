@@ -20,9 +20,9 @@ private:
     snd_mixer_t *mixer = nullptr;
     snd_mixer_selem_id_t *sid = nullptr;
     snd_mixer_elem_t *elem = nullptr;
-    long volume;
-    long min;
-    long max;
+    long volume{};
+    long min{};
+    long max{};
 };
 
 

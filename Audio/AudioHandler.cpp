@@ -9,36 +9,20 @@ AudioHandler::AudioHandler() {
 void AudioHandler::initializeMixer() {
     int err;
 
-    if ((err = snd_mixer_open(&mixer, 0)) < 0) {
-        cleanUp(err);
-        return;
-    }
+    if ((err = snd_mixer_open(&mixer, 0)) < 0) cleanUp(err);
 
-    if ((err = snd_mixer_attach(mixer, "default")) < 0) {
-        cleanUp(err);
-        return;
-    }
+    if ((err = snd_mixer_attach(mixer, "default")) < 0) cleanUp(err);
 
-    if ((err = snd_mixer_selem_register(mixer, nullptr, nullptr)) < 0) {
-        cleanUp(err);
-        return;
-    }
+    if ((err = snd_mixer_selem_register(mixer, nullptr, nullptr)) < 0) cleanUp(err);
 
-    if ((err = snd_mixer_load(mixer)) < 0) {
-        cleanUp(err);
-        return;
-    }
+    if ((err = snd_mixer_load(mixer)) < 0) cleanUp(err);
 
     snd_mixer_selem_id_malloc(&sid);
     snd_mixer_selem_id_set_index(sid, 0);
     snd_mixer_selem_id_set_name(sid, "Master");
     elem = snd_mixer_find_selem(mixer, sid);
 
-    if (!elem) {
-        std::cerr << "Cannot find simple element." << std::endl;
-        cleanUp();
-        return;
-    }
+    if (!elem) cleanUp();
 
     initializeParams();
 }
@@ -62,7 +46,8 @@ void AudioHandler::cleanUp(int error) {
     if (sid) snd_mixer_selem_id_free(sid);
     if (elem) snd_mixer_elem_free(elem);
 
-    if (error) std::cerr << "Error occurred: " << snd_strerror(error) << std::endl;
+    if (error)
+        throw std::runtime_error(snd_strerror(error));
 }
 
 AudioHandler::~AudioHandler() noexcept {
