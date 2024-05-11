@@ -1,16 +1,30 @@
-# TouchpadVolumeControl
+# Touchpad Volume Control
 
-# (sudo dnf install libevdev-devel)
-# (sudo ln -s /usr/include/libevdev-1.0/libevdev /usr/include/libevdev)
+This project adds the ablility to control the volume of a laptop via its touchpad.
 
-to run via terminal
-# (g++ main.cpp -o touchpad pkg-config --cflags --libs libevdev)
+## Prerequisites
+Make sure these libraries are installed in your computer
 
-to get devices
-# cat /proc/bus/input/devices
+```
+sudo dnf install libevdev-devel
+sudo dnf install alsa-lib-devel
+```
+Create a symbolic link for libevdev
+```
+sudo ln -s /usr/include/libevdev-1.0/libevdev /usr/include/libevdev
+```
 
-for audio
-# sudo dnf install alsa-lib-devel
 
-gotta run with sudo -E to get the permissions to change the volume
-# sudo -E ./project_name
+## Installation
+
+```
+git clone this repo
+IDK yet
+```
+
+
+## Disclaimer
+
+This project does not disregard the already existing shortcuts for the touchpad. Use it at your own discretion.
+
+Tested OS: Fedora 38
