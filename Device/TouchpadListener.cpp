@@ -3,25 +3,33 @@
 #include <fcntl.h>
 #include <iostream>
 #include <queue>
-#include <numeric>
 #include <algorithm>
 #include <utility>
+#include <filesystem>
 
 TouchpadListener::TouchpadListener(TouchpadListener::OnVolumeChange onVolumeChange) :
         onVolumeChange(std::move(onVolumeChange)), device(getDevice()) {
     if (device == nullptr) {
         throw std::runtime_error("Couldn't find device!");
-        return;
     }
 
     processEvents();
 }
 
+void TouchpadListener::countDevices() {
+    using namespace std::filesystem;
+    for (const auto& entry : directory_iterator(devicesPath)) {
+        std::string path = entry.path().filename().string();
+        if (path.find("event") == 0) ++deviceCount;
+    }
+}
+
 libevdev *TouchpadListener::getDevice() {
+    countDevices();
     libevdev *dev = nullptr;
 
-    for (size_t i = 0; i < 20; ++i) {
-        std::string path = devicesPath + std::to_string(i);
+    for (size_t i = 0; i < deviceCount; ++i) {
+        std::string path = devicesPath + deviceName + std::to_string(i);
         int fd = open(path.c_str(), O_RDWR | O_CLOEXEC);
 
         if (fd == -1) break;
@@ -46,8 +54,8 @@ void TouchpadListener::processEvents() {
 
     input_event ev = {};
     int status = 0;
-    auto is_error = [](int v) { return v < 0 && v != -EAGAIN; };
-    auto has_next_event = [](int v) { return v >= 0; };
+    const auto is_error = [](int v) { return v < 0 && v != -EAGAIN; };
+    const auto has_next_event = [](int v) { return v >= 0; };
     const auto flags = LIBEVDEV_READ_FLAG_NORMAL | LIBEVDEV_READ_FLAG_BLOCKING;
 
     bool tripleTouching = false;
@@ -62,6 +70,7 @@ void TouchpadListener::processEvents() {
 
             case BTN_TOOL_TRIPLETAP:
                 tripleTouching = ev.value;
+                //add mute capability
                 break;
 
             case ABS_MT_TRACKING_ID: {
@@ -79,6 +88,7 @@ void TouchpadListener::processEvents() {
 
                 fingers[currFinger].updateY(ev.value);
                 int volume = updateVolume(fingers[currFinger], ev.value);
+                std::cout << "new Volume: " << volume << std::endl;
                 onVolumeChange(-volume);
                 break;
             }

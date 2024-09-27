@@ -6,16 +6,15 @@ AudioHandler::AudioHandler() {
     initializeMixer();
 }
 
+void AudioHandler::checkError(int err) {
+    if (err < 0) cleanUp(err);
+}
+
 void AudioHandler::initializeMixer() {
-    int err;
-
-    if ((err = snd_mixer_open(&mixer, 0)) < 0) cleanUp(err);
-
-    if ((err = snd_mixer_attach(mixer, "default")) < 0) cleanUp(err);
-
-    if ((err = snd_mixer_selem_register(mixer, nullptr, nullptr)) < 0) cleanUp(err);
-
-    if ((err = snd_mixer_load(mixer)) < 0) cleanUp(err);
+    checkError(snd_mixer_open(&mixer, 0));
+    checkError(snd_mixer_attach(mixer, "default"));
+    checkError(snd_mixer_selem_register(mixer, nullptr, nullptr));
+    checkError(snd_mixer_load(mixer));
 
     snd_mixer_selem_id_malloc(&sid);
     snd_mixer_selem_id_set_index(sid, 0);
@@ -46,10 +45,9 @@ void AudioHandler::cleanUp(int error) {
     if (sid) snd_mixer_selem_id_free(sid);
     if (elem) snd_mixer_elem_free(elem);
 
-    if (error)
-        throw std::runtime_error(snd_strerror(error));
+    if (error) throw std::runtime_error(snd_strerror(error));
 }
 
-AudioHandler::~AudioHandler() noexcept {
+AudioHandler::~AudioHandler() {
     cleanUp();
 }

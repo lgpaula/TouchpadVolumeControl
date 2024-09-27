@@ -24,14 +24,17 @@ public:
 
 private:
     libevdev* getDevice();
+    void countDevices();
     static int updateVolume(Finger finger, int y);
-    OnVolumeChange onVolumeChange;
 
 private:
-    std::string devicesPath = "/dev/input/event";
+    OnVolumeChange onVolumeChange;
+    const std::string devicesPath = "/dev/input/";
+    const std::string deviceName = "event";
     libevdev *device;
     std::array<Finger, 3> fingers;
     int currFinger = -1;
+    int deviceCount{};
 };
 
 

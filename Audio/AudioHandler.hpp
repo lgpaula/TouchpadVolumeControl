@@ -9,12 +9,13 @@ public:
     AudioHandler();
     void increaseVolume(long newVolume);
 
+    ~AudioHandler();
+
 private:
     void initializeMixer();
     void initializeParams();
     void cleanUp(int error = 0);
-
-    ~AudioHandler() noexcept;
+    void checkError(int err);
 
 private:
     snd_mixer_t *mixer = nullptr;
