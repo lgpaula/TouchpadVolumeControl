@@ -7,8 +7,8 @@
 #include <utility>
 #include <filesystem>
 
-TouchpadListener::TouchpadListener(TouchpadListener::OnVolumeChange onVolumeChange) :
-        onVolumeChange(std::move(onVolumeChange)), device(getDevice()) {
+TouchpadListener::TouchpadListener(TouchpadListener::OnVolumeChange onVolumeChange, TouchpadListener::OnMute onMute) :
+        onVolumeChange(std::move(onVolumeChange)), onMute(std::move(onMute)), device(getDevice()) {
     if (device == nullptr) {
         throw std::runtime_error("Couldn't find device!");
     }
@@ -60,6 +60,10 @@ void TouchpadListener::processEvents() {
 
     bool tripleTouching = false;
 
+    std::chrono::steady_clock::time_point tripleTapTime;
+    bool pendingMute = false;
+    const int tripleTapReleaseTimeout = 200;
+
     while (status = libevdev_next_event(device, flags, &ev), !is_error(status)) {
         if (!has_next_event(status)) continue;
 
@@ -70,7 +74,18 @@ void TouchpadListener::processEvents() {
 
             case BTN_TOOL_TRIPLETAP:
                 tripleTouching = ev.value;
-                //add mute capability
+
+                if (ev.value == 1) {
+                    pendingMute = true;
+                    tripleTapTime = std::chrono::steady_clock::now();
+                } else if (ev.value == 0 && pendingMute) {
+                    auto now = std::chrono::steady_clock::now();
+                    if (std::chrono::duration_cast<std::chrono::milliseconds>(now - tripleTapTime).count() <= tripleTapReleaseTimeout) {
+                        onMute();
+                    }
+
+                    pendingMute = false;
+                }
                 break;
 
             case ABS_MT_TRACKING_ID: {

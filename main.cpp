@@ -1,6 +1,5 @@
 #include "Audio/AudioHandler.hpp"
 #include "Device/TouchpadListener.hpp"
-#include <iostream>
 
 int main() {
 
@@ -10,6 +9,8 @@ int main() {
         if (volume) {
             audioHandler.increaseVolume(volume);
         }
+    }, [&audioHandler]() {
+        audioHandler.toggleMute();
     });
 
     return 0;

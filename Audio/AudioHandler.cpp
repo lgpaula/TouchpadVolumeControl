@@ -46,6 +46,11 @@ void AudioHandler::increaseVolume(long newVolume) {
     volume = std::clamp(volume, min, max);
 }
 
+void AudioHandler::toggleMute() {
+    snd_mixer_selem_set_playback_switch_all(elem, isMuted);
+    isMuted = !isMuted;
+}
+
 void AudioHandler::cleanUp(int error) {
     if (mixer) snd_mixer_close(mixer);
     if (sid) snd_mixer_selem_id_free(sid);
