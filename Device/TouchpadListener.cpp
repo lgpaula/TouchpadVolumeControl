@@ -85,10 +85,8 @@ void TouchpadListener::processEvents() {
 
             case ABS_MT_POSITION_Y: {
                 if (currFinger == -1 || !tripleTouching) break;
-
-                fingers[currFinger].updateY(ev.value);
+                fingers[currFinger].normalizeY(ev.value);
                 int volume = updateVolume(fingers[currFinger], ev.value);
-                std::cout << "new Volume: " << volume << std::endl;
                 onVolumeChange(-volume);
                 break;
             }
@@ -103,18 +101,15 @@ TouchpadListener::~TouchpadListener() noexcept {
     libevdev_free(device);
 }
 
-int TouchpadListener::updateVolume(Finger finger, int y) {
+int TouchpadListener::updateVolume(Finger& finger, int y) {
     const auto diff = y - finger.currentY;
 
-    if (std::abs(diff) >= 5) {
-        finger.currentY = y;
-        return diff / 5;
-    }
+    if (std::abs(diff) < 15) return 0;
 
-    return 0;
+    finger.currentY = y;
+    return diff / 15;
 }
 
-void Finger::updateY(int y) {
-    if (id) return;
+void Finger::normalizeY(int y) {
     if (currentY == std::numeric_limits<int>::max()) currentY = y;
 }

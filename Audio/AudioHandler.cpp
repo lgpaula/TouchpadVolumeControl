@@ -1,6 +1,7 @@
 #include "AudioHandler.hpp"
 #include <iostream>
 #include <algorithm>
+#include <chrono>
 
 AudioHandler::AudioHandler() {
     initializeMixer();
@@ -34,6 +35,11 @@ void AudioHandler::initializeParams() {
 void AudioHandler::increaseVolume(long newVolume) {
     if (volume == max && newVolume > 0) return;
     if (volume == min && newVolume < 0) return;
+
+    static auto lastUpdate = std::chrono::steady_clock::now();
+    auto now = std::chrono::steady_clock::now();
+    if (now - lastUpdate < std::chrono::milliseconds(50)) return;
+    lastUpdate = now;
 
     snd_mixer_selem_set_playback_volume_all(elem, volume + newVolume * max / 100);
     volume += newVolume * max / 100;

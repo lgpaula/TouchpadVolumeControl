@@ -10,7 +10,7 @@ struct Finger {
     int id = -1;
     int currentY = std::numeric_limits<int>::max();
 
-    void updateY(int y);
+    void normalizeY(int y);
 };
 
 class TouchpadListener {
@@ -25,7 +25,7 @@ public:
 private:
     libevdev* getDevice();
     void countDevices();
-    static int updateVolume(Finger finger, int y);
+    static int updateVolume(Finger& finger, int y);
 
 private:
     OnVolumeChange onVolumeChange;
