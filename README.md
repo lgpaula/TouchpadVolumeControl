@@ -4,6 +4,7 @@ This project adds the ablility to control the volume of a laptop via its touchpa
 
 ## Key Features
   * Triple finger up and down gestures for volume control.
+  * Triple tap to mute/unmute
 
 ## Prerequisites
 Make sure these libraries are installed in your computer.
