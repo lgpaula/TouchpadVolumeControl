@@ -44,6 +44,8 @@ void AudioHandler::increaseVolume(long newVolume) {
     snd_mixer_selem_set_playback_volume_all(elem, volume + newVolume * max / 100);
     volume += newVolume * max / 100;
     volume = std::clamp(volume, min, max);
+
+    if (isMuted) toggleMute();
 }
 
 void AudioHandler::toggleMute() {
