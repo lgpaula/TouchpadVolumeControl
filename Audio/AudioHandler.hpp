@@ -8,6 +8,7 @@ class AudioHandler {
 public:
     AudioHandler();
     void increaseVolume(long newVolume);
+    void toggleMute();
 
     ~AudioHandler();
 
@@ -24,6 +25,7 @@ private:
     long volume{};
     long min{};
     long max{};
+    bool isMuted = false;
 };
 
 

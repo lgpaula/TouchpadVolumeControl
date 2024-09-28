@@ -17,8 +17,9 @@ class TouchpadListener {
 
 public:
     using OnVolumeChange = std::function<void(int volume)>;
+    using OnMute = std::function<void()>;
 
-    explicit TouchpadListener(OnVolumeChange onVolumeChange);
+    explicit TouchpadListener(OnVolumeChange onVolumeChange, OnMute onMute);
     ~TouchpadListener() noexcept;
     void processEvents();
 
@@ -29,6 +30,7 @@ private:
 
 private:
     OnVolumeChange onVolumeChange;
+    OnMute onMute;
     const std::string devicesPath = "/dev/input/";
     const std::string deviceName = "event";
     libevdev *device;
