@@ -9,22 +9,26 @@ This project adds the ablility to control the volume of a laptop via its touchpa
 ## Prerequisites
 Make sure these libraries are installed in your computer.
   * ALSA
-```
+```bash
 sudo dnf install alsa-lib-devel
 ```
   * libevdev
-```
+```bash
 sudo dnf install libevdev-devel
 ```
 Create a symbolic link for libevdev
-```
+```bash
 sudo ln -s /usr/include/libevdev-1.0/libevdev /usr/include/libevdev
 ```
 
 ## Installation
   1. Download the latest release.
   2. Extract the files.
-  3. Run the executable file to launch the application. Ensure the software is running with administrator privileges to enable it to control the volume.
+  3. Go into the extracted folder and run the commads:
+  ```bash
+  mkdir build && cd build && cmake ..
+  ```
+  4. Run the executable file to launch the application. Ensure the software is running with administrator privileges to enable it to control the volume.
 
 ## Disclaimer
 
