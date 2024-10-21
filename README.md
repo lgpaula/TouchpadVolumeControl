@@ -1,6 +1,6 @@
 # Touchpad Volume Control
 
-This project adds the ablility to control the volume of a laptop via its touchpad.
+This project adds the ability to control the volume of a laptop via its touchpad.
 
 ## Key Features
   * Triple finger up and down gestures for volume control.
@@ -25,11 +25,19 @@ sudo ln -s /usr/include/libevdev-1.0/libevdev /usr/include/libevdev
   2. Extract the files.
   3. Run the executable file to launch the application. Ensure the software is running with administrator privileges to enable it to control the volume.
 
-## Disclaimer
+## Disclaimers
 
-This project does not disregard the already existing shortcuts for the touchpad. Use it at your own discretion.
+  1. This project does not disregard the already existing shortcuts for the touchpad. Use it at your own discretion.
+  2. Tested OS: Fedora 40
 
-Tested OS: Fedora 40
+## Acknowledgments
 
-## License
-[MIT](https://choosealicense.com/licenses/mit/)
+This software uses the following third-party libraries:
+
+- **alsa-lib**
+    - Licensed under the GNU Lesser General Public License v2.1 (LGPL-2.1).
+    - [License Text](licenses/LICENSE.LGPL-2.1)
+
+- **libevdev**
+    - Licensed under the MIT License.
+    - [License Text](licenses/LICENSE.libevdev)
