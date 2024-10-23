@@ -16,7 +16,7 @@ private:
     void initializeMixer();
     void initializeParams();
     void cleanUp(int error = 0);
-    void checkError(int err);
+    void checkError(int err, const char* functionName);
 
 private:
     snd_mixer_t *mixer = nullptr;
