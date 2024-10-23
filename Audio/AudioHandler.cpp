@@ -38,10 +38,13 @@ void AudioHandler::increaseVolume(long newVolume) {
 
     static auto lastUpdate = std::chrono::steady_clock::now();
     auto now = std::chrono::steady_clock::now();
-    if (now - lastUpdate < std::chrono::milliseconds(50)) return;
+    if (now - lastUpdate < std::chrono::milliseconds(10)) return;
     lastUpdate = now;
 
-    snd_mixer_selem_set_playback_volume_all(elem, volume + newVolume * max / 100);
+    auto mixerVolume = volume + newVolume * max / 100;
+    mixerVolume = std::clamp(mixerVolume, min, max);
+
+    snd_mixer_selem_set_playback_volume_all(elem, mixerVolume);
     volume += newVolume * max / 100;
     volume = std::clamp(volume, min, max);
 

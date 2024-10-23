@@ -122,7 +122,7 @@ int TouchpadListener::updateVolume(Finger& finger, int y) {
     if (std::abs(diff) < 15) return 0;
 
     finger.currentY = y;
-    return diff / 15;
+    return diff / 12;
 }
 
 void Finger::normalizeY(int y) {
