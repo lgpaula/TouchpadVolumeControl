@@ -16,27 +16,24 @@ sudo dnf install alsa-lib-devel
 ```bash
 sudo dnf install libevdev-devel
 ```
-Create a symbolic link for libevdev
-```bash
-sudo ln -s /usr/include/libevdev-1.0/libevdev /usr/include/libevdev
-```
 
 ## Installation
   1. Download the latest release.
   2. Extract the files.
-  3. Go into the extracted folder and run the commads:
+  3. Go into the extracted folder and run the commands:
   ```bash
   mkdir build && cd build && cmake ..
   ```
-  4. Run the executable file to launch the application. Ensure the software is running with administrator privileges to enable it to control the volume.
+  4. Run the executable file with the following command to ensure the software runs with administrator privileges and on a clean environment:
+  ```bash
+  sudo -E ./TouchpadVolumeControl 
+  ```
 
 ## Disclaimers
-
   1. This project does not disregard the already existing shortcuts for the touchpad. Use it at your own discretion.
   2. Tested OS: Fedora 40
 
 ## Acknowledgments
-
 This software uses the following third-party libraries:
 
 - **alsa-lib**
