@@ -26,17 +26,24 @@ sudo dnf install libevdev-devel
 ```
 
 ## Installation
-  1. Download the latest release.
-  2. Extract the files.
-  3. Go into the extracted folder and run the commands:
-  ```bash
-  mkdir build && cd build && cmake ..
-  ```
-  4. Run the executable file with the following command to ensure the software runs with administrator privileges and on a clean environment:
+  ### Build method
+   1. Download the latest release.
+   2. Extract the files.
+   3. Go into the extracted folder and run the commands:
+   ```bash
+   mkdir build && cd build && cmake ..
+   ```
+   4. Run the executable file with the following command to ensure the software runs with administrator privileges and on a clean environment:
   ```bash
   sudo -E ./TouchpadVolumeControl 
   ```
-
+  ### AppImage method
+   1. Download the AppImage file from the latest release.
+   2. Enable execution permission in the program's properties.
+   3. Run the executable file with the following command to ensure the software runs with administrator privileges and on a clean environment:
+  ```bash
+  sudo -E ./TouchpadVolumeControl-x86_64.AppImage 
+  ```
 ## Disclaimers
   1. This project does not disregard the already existing shortcuts for the touchpad. Use it at your own discretion.
   2. Tested OS: Fedora 40
