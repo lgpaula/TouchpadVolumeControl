@@ -8,11 +8,19 @@ This project adds the ability to control the volume of a laptop via its touchpad
 
 ## Prerequisites
 Make sure these libraries are installed in your computer.
-  * ALSA
+```bash
+sudo dnf update
+sudo dnf install gcc-c++
+```
+- Cmake
+```bash
+sudo dnf install cmake
+```
+- ALSA
 ```bash
 sudo dnf install alsa-lib-devel
 ```
-  * libevdev
+- libevdev
 ```bash
 sudo dnf install libevdev-devel
 ```
